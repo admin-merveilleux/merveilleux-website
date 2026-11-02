@@ -30,6 +30,8 @@ import { PreviewComponent as PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860 }
 import { FixedToolbarFeatureClient as FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { LLMInstructionsDescription as LLMInstructionsDescription_3817bf644402e67bfe6577f60ef982de } from '@payloadcms/ui'
 import { LLMInstructionsCell as LLMInstructionsCell_ab83ff7e88da8d3530831f296ec4756a } from '@payloadcms/ui/rsc'
+import { default as default_aa0a2d19d38a4839dbd373417e210b89 } from '@/components/AdminLogo'
+import { default as default_8a7ab0eb7ab5c511aba12e68480bfe5e } from '@/components/BeforeLogin'
 import { WelcomeWidget as WelcomeWidget_ab83ff7e88da8d3530831f296ec4756a } from '@payloadcms/ui/rsc'
 import { CollectionCards as CollectionCards_ab83ff7e88da8d3530831f296ec4756a } from '@payloadcms/ui/rsc'
 import { CollectionQueryWidget as CollectionQueryWidget_ab83ff7e88da8d3530831f296ec4756a } from '@payloadcms/ui/rsc'
@@ -74,6 +76,8 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#FixedToolbarFeatureClient": FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/ui#LLMInstructionsDescription": LLMInstructionsDescription_3817bf644402e67bfe6577f60ef982de,
   "@payloadcms/ui/rsc#LLMInstructionsCell": LLMInstructionsCell_ab83ff7e88da8d3530831f296ec4756a,
+  "@/components/AdminLogo#default": default_aa0a2d19d38a4839dbd373417e210b89,
+  "@/components/BeforeLogin#default": default_8a7ab0eb7ab5c511aba12e68480bfe5e,
   "@payloadcms/ui/rsc#WelcomeWidget": WelcomeWidget_ab83ff7e88da8d3530831f296ec4756a,
   "@payloadcms/ui/rsc#CollectionCards": CollectionCards_ab83ff7e88da8d3530831f296ec4756a,
   "@payloadcms/ui/rsc#CollectionQueryWidget": CollectionQueryWidget_ab83ff7e88da8d3530831f296ec4756a,
