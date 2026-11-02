@@ -2,37 +2,78 @@ import React from 'react'
 
 export const AdminLogo: React.FC = () => {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 0 8px', width: '100%' }}>
-      <div style={{
-        display: 'inline-flex',
+    <div
+      style={{
+        display: 'flex',
         alignItems: 'center',
-        gap: 10,
-        textDecoration: 'none',
-      }}>
-        <div style={{
-          width: 38,
-          height: 38,
-          borderRadius: 10,
-          backgroundColor: '#0d0f12',
-          border: '1px solid rgba(127, 255, 0, 0.4)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 0 15px rgba(127, 255, 0, 0.15)',
-        }}>
-          <span style={{ color: '#7FFF00', fontSize: 20, fontWeight: 900 }}>M</span>
-        </div>
-        <span style={{
-          fontSize: 22,
-          fontWeight: 800,
-          color: 'var(--theme-text, #ffffff)',
-          letterSpacing: '-0.03em',
-        }}>
-          merveille<span style={{ color: '#7FFF00' }}>UX</span>
-        </span>
-      </div>
+        justifyContent: 'center',
+        padding: '12px 0 16px',
+        width: '100%',
+      }}
+    >
+      <svg
+        width="64"
+        height="45"
+        viewBox="0 0 174.41 121.6"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        style={{ display: 'block', height: '45px', width: 'auto' }}
+        aria-label="Merveilleux Design"
+      >
+        <style>{`
+          .mv-icon-arch {
+            fill: var(--theme-elevation-800, #111827);
+            transition: fill 0.2s ease;
+          }
+          @media (prefers-color-scheme: dark) {
+            .mv-icon-arch {
+              fill: var(--theme-elevation-800, #ffffff);
+            }
+          }
+          [data-theme="dark"] .mv-icon-arch {
+            fill: #ffffff !important;
+          }
+          [data-theme="light"] .mv-icon-arch {
+            fill: #111827 !important;
+          }
+        `}</style>
+        <defs>
+          <linearGradient
+            id="mv-star-grad"
+            x1="13.6"
+            y1="13.94"
+            x2="45.74"
+            y2="45.65"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop offset="0%" stopColor="#00FFFF" />
+            <stop offset="51%" stopColor="#7FFF00" />
+            <stop offset="98%" stopColor="#DEFF00" />
+          </linearGradient>
+        </defs>
+
+        {/* Double arche 'm' adaptée fond sombre / fond clair */}
+        <g>
+          <path
+            className="mv-icon-arch"
+            d="M113.66,121.6h-24.61c-.05,0-.09-.04-.09-.09v-49.65c0-9.38-6.94-17.63-16.29-18.47-10.63-.95-19.59,7.43-19.59,17.86v50.25c0,.05-.04.09-.09.09h-24.61c-.05,0-.09-.04-.09-.09v-49.13c0-25.18,20.61-45.49,45.73-43.74,22.16,1.55,39.72,20.07,39.72,42.62v50.25c0,.05-.04.09-.09.09Z"
+          />
+          <path
+            className="mv-icon-arch"
+            d="M174.32,121.37h-24.61c-.05,0-.09-.04-.09-.09v-49.65c0-9.38-6.94-17.63-16.29-18.47-10.63-.96-19.59,7.43-19.59,17.86v50.48c0,.05-.04.09-.09.09h-24.61c-.05,0-.09-.04-.09-.09v-49.36c0-25.18,20.61-45.49,45.73-43.74,22.16,1.55,39.72,20.07,39.72,42.62v50.25c0,.05-.04.09-.09.09Z"
+          />
+        </g>
+
+        {/* Étoile scintillante en dégradé signature néon */}
+        <path
+          d="M22.83,47.17C17.95,37.51,10.11,29.6.5,24.64c-.66-.34-.66-1.27,0-1.61C10.11,18.08,17.95,10.17,22.83.51c.34-.67,1.28-.67,1.62,0,4.88,9.66,12.71,17.57,22.33,22.53.66.34.66,1.27,0,1.61-9.61,4.96-17.45,12.87-22.33,22.53-.34.67-1.28.67-1.62,0Z"
+          fill="url(#mv-star-grad)"
+        />
+      </svg>
     </div>
   )
 }
+
+export const AdminIcon = AdminLogo
 
 export default AdminLogo

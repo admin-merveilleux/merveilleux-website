@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { signInWithGoogle, ALLOWED_DOMAIN } from '@/lib/auth-client'
+import { signInWithGoogle } from '@/lib/auth-client'
 
 export const BeforeLogin: React.FC = () => {
   const [loading, setLoading] = useState(false)
@@ -18,23 +18,16 @@ export const BeforeLogin: React.FC = () => {
 
   return (
     <div style={{ width: '100%', marginBottom: '24px' }}>
-      <div style={{ textAlign: 'center', marginBottom: '18px' }}>
-        <h2 style={{
-          fontSize: '18px',
+      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+        <h1 style={{
+          fontSize: '22px',
           fontWeight: 700,
-          margin: '0 0 6px 0',
+          margin: '0',
           color: 'var(--theme-elevation-800, #ffffff)',
-          letterSpacing: '-0.01em',
+          letterSpacing: '-0.02em',
         }}>
-          Espace Studio & Administration
-        </h2>
-        <p style={{
-          fontSize: '13px',
-          color: 'var(--theme-elevation-500, #9aa2b1)',
-          margin: 0,
-        }}>
-          Connectez-vous avec votre compte professionnel
-        </p>
+          Connexion
+        </h1>
       </div>
 
       {/* Bouton Google SSO */}
@@ -80,7 +73,7 @@ export const BeforeLogin: React.FC = () => {
           />
         </svg>
         <span>
-          {loading ? 'Redirection Google...' : `Continuer avec Google (@${ALLOWED_DOMAIN})`}
+          {loading ? 'Redirection Google...' : 'Continuer avec Google'}
         </span>
       </button>
 

@@ -1,11 +1,10 @@
 'use client'
 
 import React, { Suspense, useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { authClient, ALLOWED_DOMAIN } from '@/lib/auth-client'
 
 function AuthCallbackContent() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const redirectUrl = searchParams.get('redirect') || '/admin'
 
@@ -13,18 +12,28 @@ function AuthCallbackContent() {
   const [userEmail, setUserEmail] = useState<string | null>(null)
 
   useEffect(() => {
-    async function verifyDomain() {
+    let isCancelled = false
+
+    async function checkSession() {
       try {
         const session = await authClient.getSession()
 
         if (!session?.data?.user?.email) {
+          // Attendre un court instant si la session Better Auth se synchronise
           setTimeout(async () => {
-            const retrySession = await authClient.getSession()
-            if (!retrySession?.data?.user?.email) {
+            if (isCancelled) return
+            try {
+              const retrySession = await authClient.getSession()
+              if (!retrySession?.data?.user?.email) {
+                // Si aucune session Better Auth n'est trouvée, tenter avec verifier ou afficher erreur
+                setStatus('error')
+                return
+              }
+              handleValidation(retrySession.data.user.email)
+            } catch (err) {
+              console.error('Erreur retry session:', err)
               setStatus('error')
-              return
             }
-            handleValidation(retrySession.data.user.email)
           }, 600)
           return
         }
@@ -37,32 +46,55 @@ function AuthCallbackContent() {
     }
 
     async function handleValidation(email: string) {
+      if (isCancelled) return
       setUserEmail(email)
-      const normalizedEmail = email.toLowerCase()
+      const normalizedEmail = email.toLowerCase().trim()
 
-      // ─── VÉRIFICATION STRICTE DU DOMAINE D'ENTREPRISE ───────
+      // ─── 1. VÉRIFICATION STRICTE DU DOMAINE D'ENTREPRISE ───────
       if (!normalizedEmail.endsWith(`@${ALLOWED_DOMAIN}`)) {
         console.warn(`[Better Auth] Accès refusé pour ${email} (domaine non @${ALLOWED_DOMAIN})`)
-        await authClient.signOut()
+        try {
+          await authClient.signOut()
+        } catch {}
         setStatus('forbidden')
         return
       }
 
-      setStatus('valid')
-
-      // Synchroniser avec la base Payload CMS
+      // ─── 2. SYNCHRONISATION AVEC PAYLOAD CMS & CREATION SESSION ─
       try {
-        await fetch('/api/auth/sync-payload', { method: 'POST' })
-      } catch (e) {
-        console.error('Erreur sync payload:', e)
-      }
+        const res = await fetch('/api/auth/sync-payload', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email: normalizedEmail }),
+        })
 
-      // Rediriger vers l'admin
-      router.push(redirectUrl)
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}))
+          console.error('Erreur synchronisation Payload:', errData)
+          setStatus('error')
+          return
+        }
+
+        setStatus('valid')
+
+        // ─── 3. REDIRECTION VERS L'ADMINISTRATION (NAVIGATION PLEINE) ─
+        setTimeout(() => {
+          window.location.href = redirectUrl
+        }, 500)
+      } catch (e) {
+        console.error('Erreur appel sync-payload:', e)
+        setStatus('error')
+      }
     }
 
-    verifyDomain()
-  }, [router, redirectUrl])
+    checkSession()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [redirectUrl])
 
   return (
     <div style={{
@@ -87,7 +119,7 @@ function AuthCallbackContent() {
           }} />
           <h2 style={{ fontSize: 20, margin: '0 0 8px' }}>Vérification du compte...</h2>
           <p style={{ color: '#9aa2b1', fontSize: 14, margin: 0 }}>
-            Validation du domaine <strong>@{ALLOWED_DOMAIN}</strong> en cours.
+            Validation de votre compte professionnel en cours.
           </p>
         </>
       )}
@@ -96,7 +128,7 @@ function AuthCallbackContent() {
         <>
           <div style={{ fontSize: 40, marginBottom: 16 }}>✅</div>
           <h2 style={{ fontSize: 20, margin: '0 0 8px', color: '#7FFF00' }}>
-            Authentification réussie !
+            Connexion réussie !
           </h2>
           <p style={{ color: '#9aa2b1', fontSize: 14 }}>
             Bienvenue, <strong>{userEmail}</strong>. Redirection vers l’administration...
@@ -111,10 +143,10 @@ function AuthCallbackContent() {
             Accès refusé
           </h2>
           <p style={{ color: '#c4cad4', fontSize: 14, lineHeight: 1.6, marginBottom: 20 }}>
-            Le compte <strong>{userEmail}</strong> n'est pas autorisé. Seules les adresses professionnelles se terminant par <code style={{ color: '#7FFF00', background: 'rgba(127,255,0,0.1)', padding: '2px 6px', borderRadius: 4 }}>@{ALLOWED_DOMAIN}</code> peuvent se connecter à cet espace.
+            Le compte <strong>{userEmail}</strong> n'est pas autorisé. Seules les adresses professionnelles se terminant par <code style={{ color: '#7FFF00', background: 'rgba(127,255,0,0.1)', padding: '2px 6px', borderRadius: 4 }}>@{ALLOWED_DOMAIN}</code> peuvent accéder à cet espace.
           </p>
           <a
-            href="/login"
+            href="/admin/login"
             style={{
               display: 'inline-block',
               backgroundColor: '#252b35',
@@ -138,10 +170,10 @@ function AuthCallbackContent() {
             Erreur d’authentification
           </h2>
           <p style={{ color: '#9aa2b1', fontSize: 14, marginBottom: 20 }}>
-            Une erreur s'est produite lors de la connexion Google.
+            Une erreur s'est produite lors de la connexion Google ou de la synchronisation de session.
           </p>
           <a
-            href="/login"
+            href="/admin/login"
             style={{
               display: 'inline-block',
               backgroundColor: '#252b35',

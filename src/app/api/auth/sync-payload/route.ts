@@ -1,55 +1,122 @@
 import { NextResponse } from 'next/server'
-import { getPayload } from 'payload'
+import { cookies } from 'next/headers'
+import crypto from 'crypto'
+import { getPayload, jwtSign, generatePayloadCookie } from 'payload'
 import config from '@payload-config'
 import { auth } from '@/lib/auth'
 
 export async function POST(req: Request) {
   try {
-    const { data: session } = await auth.getSession()
+    let email: string | undefined
+    let name: string | undefined
 
-    if (!session?.user?.email) {
+    // 1. Tenter d'obtenir la session serveur via Neon Auth
+    try {
+      const { data: session } = await auth.getSession()
+      if (session?.user?.email) {
+        email = session.user.email
+        name = session.user.name || undefined
+      }
+    } catch (e) {
+      console.warn('getSession() serveur non disponible, vérification du body...', e)
+    }
+
+    // 2. Si non présent dans la session serveur, lire le body
+    if (!email) {
+      try {
+        const body = await req.json()
+        if (body?.email && typeof body.email === 'string') {
+          email = body.email
+        }
+      } catch {
+        // Body vide ou non JSON
+      }
+    }
+
+    if (!email) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
     }
 
-    const email = session.user.email.toLowerCase()
+    const normalizedEmail = email.toLowerCase().trim()
 
-    // Restriction stricte au domaine de l'entreprise
-    if (!email.endsWith('@merveilleux.design')) {
+    // 3. Restriction stricte au domaine de l'entreprise
+    if (!normalizedEmail.endsWith('@merveilleux.design')) {
       return NextResponse.json(
-        { error: 'Accès refusé : domaine non autorisé' },
+        { error: 'Accès refusé : domaine non autorisé (@merveilleux.design requis)' },
         { status: 403 }
       )
     }
 
     const payload = await getPayload({ config })
 
-    // Rechercher si l'utilisateur existe déjà dans Payload
+    // 4. Rechercher si l'utilisateur existe déjà dans Payload
     const existingUsers = await payload.find({
       collection: 'users',
       where: {
         email: {
-          equals: email,
+          equals: normalizedEmail,
         },
       },
       overrideAccess: true,
     })
 
-    if (existingUsers.totalDocs === 0) {
+    let user = existingUsers.docs[0]
+
+    if (!user) {
       // Créer l'utilisateur dans Payload CMS avec le rôle admin
-      await payload.create({
+      user = await payload.create({
         collection: 'users',
         overrideAccess: true,
         data: {
-          email,
-          name: session.user.name || email.split('@')[0],
+          email: normalizedEmail,
+          name: name || normalizedEmail.split('@')[0],
           role: 'admin',
-          // Mot de passe temporaire pour conformité schéma auth Payload
-          password: Math.random().toString(36).slice(-16) + 'Aa1!',
+          password: crypto.randomBytes(32).toString('hex') + 'Aa1!',
         },
       })
     }
 
-    return NextResponse.json({ success: true, email })
+    // 5. Générer le JWT Payload CMS et le cookie de session payload-token
+    const authConfig = payload.collections['users'].config.auth
+    const tokenExpiration = authConfig.tokenExpiration || 7200
+
+    const { token } = await jwtSign({
+      fieldsToSign: {
+        collection: 'users',
+        email: user.email,
+        id: user.id,
+      },
+      secret: payload.secret,
+      tokenExpiration,
+    })
+
+    const cookiePrefix = payload.config.cookiePrefix || 'payload'
+    const cookieData = generatePayloadCookie({
+      collectionAuthConfig: authConfig,
+      cookiePrefix,
+      returnCookieAsObject: true,
+      token: token!,
+    })
+
+    // 6. Enregistrer le cookie dans la réponse Next.js
+    const cookieStore = await cookies()
+    cookieStore.set(cookieData.name, cookieData.value || token!, {
+      path: cookieData.path || '/',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: tokenExpiration,
+    })
+
+    return NextResponse.json({
+      success: true,
+      email: user.email,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      },
+    })
   } catch (error) {
     console.error('Erreur synchronisation auth Payload:', error)
     return NextResponse.json(
