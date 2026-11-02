@@ -1,0 +1,11 @@
+/* Custom styling for Merveilleux Design Admin */
+:root {
+  --color-brand-accent: #7fff00;
+}
+
+[data-theme='dark'] {
+  --theme-elevation-50: #0d0f12;
+  --theme-elevation-100: #14171d;
+  --theme-elevation-150: #1c2128;
+  --theme-elevation-200: #252b35;
+}
