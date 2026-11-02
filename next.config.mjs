@@ -1,11 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Payload CMS v4 configuration
-  experimental: {
-    reactCompiler: false,
-  },
   images: {
-    // Allow images from Neon storage and external sources
     remotePatterns: [
       {
         protocol: 'https',
@@ -16,7 +11,6 @@ const nextConfig = {
   // Redirect old URLs for SEO preservation
   async redirects() {
     return [
-      // Legacy service redirects (from old .htaccess)
       {
         source: '/audit',
         destination: '/services/audit-ux',

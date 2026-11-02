@@ -13,6 +13,8 @@
     "generate:importmap": "cross-env NODE_OPTIONS='--no-deprecation' payload generate:importmap"
   },
   "dependencies": {
+    "@neon/config": "^1.10.0",
+    "@neon/env": "^1.6.8",
     "@payloadcms/db-postgres": "4.0.0-beta.6",
     "@payloadcms/next": "4.0.0-beta.6",
     "@payloadcms/plugin-seo": "4.0.0-beta.6",
@@ -33,6 +35,7 @@
     "@types/react-dom": "^19.0.0",
     "eslint": "^9.25.0",
     "eslint-config-next": "^16.4.3",
+    "neon": "^8.16.0",
     "typescript": "^5.8.0"
   },
   "engines": {
