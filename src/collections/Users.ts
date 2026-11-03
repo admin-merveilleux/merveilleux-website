@@ -12,7 +12,9 @@ export const Users: CollectionConfig = {
     defaultColumns: ['name', 'email', 'role'],
     group: 'Administration',
   },
-  auth: true,
+  auth: {
+    useSessions: false,
+  },
   access: {
     admin: authenticated,
     create: authenticated,

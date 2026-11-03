@@ -98,7 +98,6 @@ export async function POST(req: Request) {
       token: token!,
     })
 
-    // 6. Enregistrer le cookie dans la réponse Next.js
     const cookieStore = await cookies()
     cookieStore.set(cookieData.name, cookieData.value || token!, {
       path: cookieData.path || '/',
@@ -108,15 +107,27 @@ export async function POST(req: Request) {
       maxAge: tokenExpiration,
     })
 
-    return NextResponse.json({
+    // 6. Construire la réponse HTTP en attachant EXPLICITEMENT le cookie Set-Cookie
+    const response = NextResponse.json({
       success: true,
       email: user.email,
+      token,
       user: {
         id: user.id,
         email: user.email,
         name: user.name,
       },
     })
+
+    response.cookies.set(cookieData.name, token!, {
+      path: cookieData.path || '/',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: tokenExpiration,
+    })
+
+    return response
   } catch (error) {
     console.error('Erreur synchronisation auth Payload:', error)
     return NextResponse.json(
