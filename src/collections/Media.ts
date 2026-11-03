@@ -23,7 +23,7 @@ export const Media: CollectionConfig = {
     delete: authenticated,
   },
   upload: {
-    staticDir: path.resolve(dirname, '../../public/media'),
+    staticDir: path.resolve(process.cwd(), 'public/media'),
     adminThumbnail: 'thumbnail',
     mimeTypes: ['image/*', 'application/pdf', 'image/svg+xml'],
   },
