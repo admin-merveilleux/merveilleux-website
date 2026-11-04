@@ -9,3 +9,33 @@
   --theme-elevation-150: #1c2128;
   --theme-elevation-200: #252b35;
 }
+
+/* Lexical Editor: Ensure Upload blocks display in their original natural aspect ratio */
+.LexicalEditorTheme__upload {
+  --upload-media-size: 100% !important;
+}
+
+.LexicalEditorTheme__upload__contents--landscape .thumbnail img,
+.LexicalEditorTheme__upload__contents--landscape .thumbnail svg,
+.LexicalEditorTheme__upload__contents--portrait .thumbnail img,
+.LexicalEditorTheme__upload__contents--portrait .thumbnail svg,
+.LexicalEditorTheme__upload img,
+.LexicalEditorTheme__upload svg {
+  max-width: 100% !important;
+  min-width: 0 !important;
+  width: auto !important;
+  max-height: 600px !important;
+  height: auto !important;
+  object-fit: contain !important;
+  border-radius: 8px;
+}
+
+/* Media Library File Preview: Display in original proportions, avoid square stretch */
+.file-preview__image-wrap img,
+.preview-sizes__preview {
+  object-fit: contain !important;
+  max-width: 100% !important;
+  max-height: 70vh !important;
+  height: auto !important;
+}
+

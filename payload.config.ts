@@ -97,8 +97,6 @@ export default buildConfig({
               {
                 name: 'thumbnail',
                 width: 300,
-                height: 300,
-                position: 'centre',
               },
               {
                 name: 'small',
