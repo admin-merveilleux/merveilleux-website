@@ -62,16 +62,16 @@ export type SupportedTimezones =
   | 'Pacific/Fiji';
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "LexicalNodes_EB3F3D9D".
+ * via the `definition` "LexicalNodes_1EBAC9A5".
  */
-export type LexicalNodes_EB3F3D9D =
+export type LexicalNodes_1EBAC9A5 =
   | SerializedTextNode
   | SerializedTabNode
   | SerializedLineBreakNode
-  | SerializedParagraphNode<LexicalNodes_EB3F3D9D>
+  | SerializedParagraphNode<LexicalNodes_1EBAC9A5>
   | SerializedHorizontalRuleNode
   | SerializedUploadNode<'media'>
-  | SerializedQuoteNode<LexicalNodes_EB3F3D9D>
+  | SerializedQuoteNode<LexicalNodes_1EBAC9A5>
   | SerializedRelationshipNode<
       | 'users'
       | 'pages'
@@ -79,6 +79,7 @@ export type LexicalNodes_EB3F3D9D =
       | 'categories'
       | 'tags'
       | 'authors'
+      | 'article-ctas'
       | 'services'
       | 'case-studies'
       | 'payload-kv'
@@ -86,24 +87,24 @@ export type LexicalNodes_EB3F3D9D =
       | 'payload-preferences'
       | 'payload-migrations'
     >
-  | SerializedAutoLinkNode<LexicalNodes_EB3F3D9D, LexicalLinkFields>
-  | SerializedLinkNode<LexicalNodes_EB3F3D9D, LexicalLinkFields>
-  | SerializedListNode<LexicalNodes_EB3F3D9D>
-  | SerializedListItemNode<LexicalNodes_EB3F3D9D>
-  | SerializedHeadingNode<LexicalNodes_EB3F3D9D>;
+  | SerializedAutoLinkNode<LexicalNodes_1EBAC9A5, LexicalLinkFields>
+  | SerializedLinkNode<LexicalNodes_1EBAC9A5, LexicalLinkFields>
+  | SerializedListNode<LexicalNodes_1EBAC9A5>
+  | SerializedListItemNode<LexicalNodes_1EBAC9A5>
+  | SerializedHeadingNode<LexicalNodes_1EBAC9A5>;
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "LexicalNodes_B6555237".
+ * via the `definition` "LexicalNodes_A5E0D5FA".
  */
-export type LexicalNodes_B6555237 =
+export type LexicalNodes_A5E0D5FA =
   | SerializedTextNode
   | SerializedTabNode
   | SerializedLineBreakNode
-  | SerializedParagraphNode<LexicalNodes_B6555237>
+  | SerializedParagraphNode<LexicalNodes_A5E0D5FA>
   | SerializedHorizontalRuleNode
-  | SerializedHeadingNode<LexicalNodes_B6555237, 'h2' | 'h3' | 'h4'>
+  | SerializedHeadingNode<LexicalNodes_A5E0D5FA, 'h2' | 'h3' | 'h4'>
   | SerializedUploadNode<'media'>
-  | SerializedQuoteNode<LexicalNodes_B6555237>
+  | SerializedQuoteNode<LexicalNodes_A5E0D5FA>
   | SerializedRelationshipNode<
       | 'users'
       | 'pages'
@@ -111,6 +112,7 @@ export type LexicalNodes_B6555237 =
       | 'categories'
       | 'tags'
       | 'authors'
+      | 'article-ctas'
       | 'services'
       | 'case-studies'
       | 'payload-kv'
@@ -118,10 +120,10 @@ export type LexicalNodes_B6555237 =
       | 'payload-preferences'
       | 'payload-migrations'
     >
-  | SerializedAutoLinkNode<LexicalNodes_B6555237, LexicalLinkFields>
-  | SerializedLinkNode<LexicalNodes_B6555237, LexicalLinkFields>
-  | SerializedListNode<LexicalNodes_B6555237>
-  | SerializedListItemNode<LexicalNodes_B6555237>;
+  | SerializedAutoLinkNode<LexicalNodes_A5E0D5FA, LexicalLinkFields>
+  | SerializedLinkNode<LexicalNodes_A5E0D5FA, LexicalLinkFields>
+  | SerializedListNode<LexicalNodes_A5E0D5FA>
+  | SerializedListItemNode<LexicalNodes_A5E0D5FA>;
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "LexicalNodes_3DE324E4".
@@ -148,6 +150,7 @@ export interface Config {
     categories: Category;
     tags: Tag;
     authors: Author;
+    'article-ctas': ArticleCta;
     services: Service;
     'case-studies': CaseStudy;
     'payload-kv': PayloadKv;
@@ -165,6 +168,7 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
     authors: AuthorsSelect<false> | AuthorsSelect<true>;
+    'article-ctas': ArticleCtasSelect<false> | ArticleCtasSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
     'case-studies': CaseStudiesSelect<false> | CaseStudiesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -352,7 +356,7 @@ export interface Page {
     ctaLabel?: string | null;
     ctaLink?: string | null;
   };
-  content?: LexicalRichText<LexicalNodes_EB3F3D9D> | null;
+  content?: LexicalRichText<LexicalNodes_1EBAC9A5> | null;
   meta?: {
     title?: string | null;
     description?: string | null;
@@ -391,6 +395,10 @@ export interface Article {
    * Classification du funnel marketing pour les Call-To-Action adaptés
    */
   funnel: 'tofu' | 'mofu' | 'bofu';
+  /**
+   * Encart CTA personnalisé pour cet article. Si laissé vide, un encart sera affiché automatiquement selon le stade de funnel sélectionné.
+   */
+  cta?: (number | null) | ArticleCta;
   publishDate?: string | null;
   author?: (number | null) | Author;
   categories?: (number | Category)[] | null;
@@ -405,7 +413,7 @@ export interface Article {
   intro?: string | null;
   mainImage?: (number | null) | Media;
   altImage?: string | null;
-  content?: LexicalRichText<LexicalNodes_B6555237> | null;
+  content?: LexicalRichText<LexicalNodes_A5E0D5FA> | null;
   /**
    * Si aucun article n’est sélectionné, la sélection automatique par tags/catégorie prendra le relais.
    */
@@ -429,6 +437,59 @@ export interface Article {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * Encarts Call-to-Action affichés dans les articles de blog selon leur stade de funnel marketing.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "article-ctas".
+ */
+export interface ArticleCta {
+  id: number;
+  /**
+   * Ex: "TOFU - Suivre merveilleUX LinkedIn", "MOFU - Audit UX", "BOFU - Démo 30 min"
+   */
+  internalName: string;
+  funnel: 'tofu' | 'mofu' | 'bofu' | 'all';
+  /**
+   * Désactiver pour exclure temporairement cet encart de la rotation automatique.
+   */
+  isActive?: boolean | null;
+  /**
+   * Ex: "Votre logiciel mérite mieux que des conseils UX génériques."
+   */
+  title: string;
+  /**
+   * Ex: "Suivez nos analyses produit sur LinkedIn."
+   */
+  subtitle: string;
+  /**
+   * Ex: "On y parle de SaaS B2B, d’interfaces complexes, de dette UX..."
+   */
+  text: string;
+  /**
+   * Ex: "Suivre merveilleUX", "Voir notre audit UX", etc.
+   */
+  buttonText: string;
+  /**
+   * Lien interne (ex: /fr/services/audit-ux) ou lien externe (ex: https://linkedin.com/...)
+   */
+  buttonUrl: string;
+  /**
+   * Ex: "Conseil UX", "Audit Gratuit", "Newsletter"
+   */
+  badge?: string | null;
+  image?: (number | null) | Media;
+  createdBy?: {
+    relationTo: 'users';
+    value: number | User;
+  } | null;
+  updatedBy?: {
+    relationTo: 'users';
+    value: number | User;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -503,7 +564,7 @@ export interface Service {
   shortDescription?: string | null;
   icon?: (number | null) | Media;
   heroImage?: (number | null) | Media;
-  content?: LexicalRichText<LexicalNodes_EB3F3D9D> | null;
+  content?: LexicalRichText<LexicalNodes_1EBAC9A5> | null;
   benefits?:
     | {
         title: string;
@@ -560,9 +621,9 @@ export interface CaseStudy {
         id?: string | null;
       }[]
     | null;
-  challenge?: LexicalRichText<LexicalNodes_EB3F3D9D> | null;
-  solution?: LexicalRichText<LexicalNodes_EB3F3D9D> | null;
-  results?: LexicalRichText<LexicalNodes_EB3F3D9D> | null;
+  challenge?: LexicalRichText<LexicalNodes_1EBAC9A5> | null;
+  solution?: LexicalRichText<LexicalNodes_1EBAC9A5> | null;
+  results?: LexicalRichText<LexicalNodes_1EBAC9A5> | null;
   testimonialQuote?: string | null;
   testimonialAuthor?: string | null;
   testimonialRole?: string | null;
@@ -643,6 +704,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'authors';
         value: number | Author;
+      } | null)
+    | ({
+        relationTo: 'article-ctas';
+        value: number | ArticleCta;
       } | null)
     | ({
         relationTo: 'services';
@@ -870,6 +935,7 @@ export interface ArticlesSelect<T extends boolean = true> {
   h1Tag?: T;
   slug?: T;
   funnel?: T;
+  cta?: T;
   publishDate?: T;
   author?: T;
   categories?: T;
@@ -929,6 +995,26 @@ export interface AuthorsSelect<T extends boolean = true> {
   bio?: T;
   linkedinUrl?: T;
   twitterUrl?: T;
+  createdBy?: T;
+  updatedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "article-ctas_select".
+ */
+export interface ArticleCtasSelect<T extends boolean = true> {
+  internalName?: T;
+  funnel?: T;
+  isActive?: T;
+  title?: T;
+  subtitle?: T;
+  text?: T;
+  buttonText?: T;
+  buttonUrl?: T;
+  badge?: T;
+  image?: T;
   createdBy?: T;
   updatedBy?: T;
   updatedAt?: T;
@@ -1262,7 +1348,16 @@ export interface CollectionQueryWidget {
   data?: {
     title?: string | null;
     relatedCollection:
-      'users' | 'media' | 'pages' | 'articles' | 'categories' | 'tags' | 'authors' | 'services' | 'case-studies';
+      | 'users'
+      | 'media'
+      | 'pages'
+      | 'articles'
+      | 'categories'
+      | 'tags'
+      | 'authors'
+      | 'article-ctas'
+      | 'services'
+      | 'case-studies';
     where?:
       | {
           [k: string]: unknown;
@@ -1285,7 +1380,18 @@ export interface CollectionQueryWidget {
 export interface ActivityWidget {
   data?: {
     excludedCollections?:
-      | ('users' | 'media' | 'pages' | 'articles' | 'categories' | 'tags' | 'authors' | 'services' | 'case-studies')[]
+      | (
+          | 'users'
+          | 'media'
+          | 'pages'
+          | 'articles'
+          | 'categories'
+          | 'tags'
+          | 'authors'
+          | 'article-ctas'
+          | 'services'
+          | 'case-studies'
+        )[]
       | null;
   };
   width: 'small' | 'medium' | 'large' | 'x-large' | 'full';

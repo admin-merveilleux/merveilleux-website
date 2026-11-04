@@ -16,6 +16,7 @@ import { Tags } from '@/collections/Tags'
 import { Authors } from '@/collections/Authors'
 import { Services } from '@/collections/Services'
 import { CaseStudies } from '@/collections/CaseStudies'
+import { ArticleCTAs } from '@/collections/ArticleCTAs'
 
 // Globals
 import { SiteSettings } from '@/globals/SiteSettings'
@@ -58,6 +59,7 @@ export default buildConfig({
     Categories,
     Tags,
     Authors,
+    ArticleCTAs,
     Services,
     CaseStudies,
   ],

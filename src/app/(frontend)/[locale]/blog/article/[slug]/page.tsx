@@ -100,6 +100,53 @@ export default async function ArticleDetailPage({
     bofu: 'Décision (BOFU)',
   }
 
+  // Resolve CTA (either custom CTA on article or default according to funnel segment)
+  let cta: any = null
+  const customCtaProp = (article as any).cta
+  if (customCtaProp && typeof customCtaProp === 'object') {
+    cta = customCtaProp
+  } else if (customCtaProp && typeof customCtaProp === 'number') {
+    try {
+      cta = await payload.findByID({
+        collection: 'article-ctas',
+        id: customCtaProp,
+        locale: currentLocale,
+      })
+    } catch {
+      cta = null
+    }
+  }
+
+  if (!cta) {
+    const funnelToMatch = article.funnel || 'mofu'
+    try {
+      const { docs: ctaDocs } = await payload.find({
+        collection: 'article-ctas',
+        locale: currentLocale,
+        where: {
+          and: [
+            { isActive: { equals: true } },
+            {
+              or: [
+                { funnel: { equals: funnelToMatch } },
+                { funnel: { equals: 'all' } },
+              ],
+            },
+          ],
+        },
+        limit: 10,
+      })
+
+      if (ctaDocs && ctaDocs.length > 0) {
+        const articleIdNum = typeof article.id === 'number' ? article.id : 0
+        const selectedIndex = articleIdNum % ctaDocs.length
+        cta = ctaDocs[selectedIndex]
+      }
+    } catch (err) {
+      console.error('Error fetching CTA:', err)
+    }
+  }
+
   return (
     <article className="article-container">
       {/* Breadcrumb */}
@@ -160,6 +207,26 @@ export default async function ArticleDetailPage({
         <div className="rich-text-content">
           <RichText data={article.content} converters={customConverters} />
         </div>
+      )}
+
+      {/* Call To Action Encart (Article-CTA) */}
+      {cta && (
+        <aside className="article-cta-box" aria-label="Call to action">
+          {cta.badge && <span className="article-cta-badge">{cta.badge}</span>}
+          {cta.title && <p className="article-cta-title">{cta.title}</p>}
+          {cta.subtitle && <h3 className="article-cta-heading">{cta.subtitle}</h3>}
+          {cta.text && <p className="article-cta-text">{cta.text}</p>}
+          {cta.buttonText && cta.buttonUrl && (
+            <a
+              href={cta.buttonUrl}
+              className="article-cta-btn"
+              target={cta.buttonUrl.startsWith('http') ? '_blank' : undefined}
+              rel={cta.buttonUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
+            >
+              {cta.buttonText} <span aria-hidden="true">→</span>
+            </a>
+          )}
+        </aside>
       )}
 
       {/* Footer / Navigation */}

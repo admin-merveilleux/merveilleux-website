@@ -77,6 +77,16 @@ export const Articles: CollectionConfig = {
       label: 'Stade Funnel (CTA)',
     },
     {
+      name: 'cta',
+      type: 'relationship',
+      relationTo: 'article-ctas',
+      admin: {
+        position: 'sidebar',
+        description: 'Encart CTA personnalisé pour cet article. Si laissé vide, un encart sera affiché automatiquement selon le stade de funnel sélectionné.',
+      },
+      label: 'Encart CTA personnalisé',
+    },
+    {
       name: 'publishDate',
       type: 'date',
       admin: {
