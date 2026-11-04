@@ -50,19 +50,37 @@ export default function HomePage() {
         flexWrap: 'wrap',
       }}>
         <a
-          href="/admin"
+          href="/fr/blog"
           style={{
             display: 'inline-block',
             backgroundColor: '#7FFF00',
             color: '#0a0b0d',
-            padding: '12px 24px',
+            padding: '12px 26px',
             borderRadius: 8,
             fontWeight: 700,
             textDecoration: 'none',
             fontSize: 15,
+            transition: 'transform 0.15s ease',
           }}
         >
-          Accéder à l'Admin Payload CMS →
+          Consulter le Blog (/fr/blog) →
+        </a>
+
+        <a
+          href="/admin"
+          style={{
+            display: 'inline-block',
+            backgroundColor: 'rgba(255, 255, 255, 0.08)',
+            color: '#ffffff',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            padding: '12px 24px',
+            borderRadius: 8,
+            fontWeight: 600,
+            textDecoration: 'none',
+            fontSize: 15,
+          }}
+        >
+          Espace Admin Payload CMS
         </a>
       </div>
     </main>
