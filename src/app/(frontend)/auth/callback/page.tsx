@@ -8,7 +8,7 @@ function AuthCallbackContent() {
   const searchParams = useSearchParams()
   const redirectUrl = searchParams.get('redirect') || '/admin'
 
-  const [status, setStatus] = useState<'checking' | 'valid' | 'forbidden' | 'error'>('checking')
+  const [status, setStatus] = useState<'checking' | 'forbidden' | 'error'>('checking')
   const [userEmail, setUserEmail] = useState<string | null>(null)
 
   useEffect(() => {
@@ -25,7 +25,6 @@ function AuthCallbackContent() {
             try {
               const retrySession = await authClient.getSession()
               if (!retrySession?.data?.user?.email) {
-                // Si aucune session Better Auth n'est trouvée, tenter avec verifier ou afficher erreur
                 setStatus('error')
                 return
               }
@@ -34,7 +33,7 @@ function AuthCallbackContent() {
               console.error('Erreur retry session:', err)
               setStatus('error')
             }
-          }, 600)
+          }, 300)
           return
         }
 
@@ -60,7 +59,7 @@ function AuthCallbackContent() {
         return
       }
 
-      // ─── 2. SYNCHRONISATION AVEC PAYLOAD CMS & CREATION SESSION ─
+      // ─── 2. SYNCHRONISATION DIRECTE AVEC PAYLOAD CMS ───────────
       try {
         const res = await fetch('/api/auth/sync-payload', {
           method: 'POST',
@@ -77,12 +76,8 @@ function AuthCallbackContent() {
           return
         }
 
-        setStatus('valid')
-
-        // ─── 3. REDIRECTION VERS L'ADMINISTRATION (NAVIGATION PLEINE) ─
-        setTimeout(() => {
-          window.location.href = redirectUrl
-        }, 500)
+        // ─── 3. REDIRECTION IMMÉDIATE VERS L'ADMIN SANS PAGE INTERMÉDIAIRE ─
+        window.location.replace(redirectUrl)
       } catch (e) {
         console.error('Erreur appel sync-payload:', e)
         setStatus('error')
@@ -96,6 +91,27 @@ function AuthCallbackContent() {
     }
   }, [redirectUrl])
 
+  if (status === 'checking') {
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 16,
+      }}>
+        <div style={{
+          width: 36,
+          height: 36,
+          border: '3px solid #252b35',
+          borderTopColor: '#7FFF00',
+          borderRadius: '50%',
+          animation: 'spin 0.8s linear infinite',
+        }} />
+      </div>
+    )
+  }
+
   return (
     <div style={{
       maxWidth: 480,
@@ -106,36 +122,6 @@ function AuthCallbackContent() {
       borderRadius: 12,
       textAlign: 'center',
     }}>
-      {status === 'checking' && (
-        <>
-          <div style={{
-            width: 40,
-            height: 40,
-            border: '3px solid #252b35',
-            borderTopColor: '#7FFF00',
-            borderRadius: '50%',
-            margin: '0 auto 20px',
-            animation: 'spin 1s linear infinite',
-          }} />
-          <h2 style={{ fontSize: 20, margin: '0 0 8px' }}>Vérification du compte...</h2>
-          <p style={{ color: '#9aa2b1', fontSize: 14, margin: 0 }}>
-            Validation de votre compte professionnel en cours.
-          </p>
-        </>
-      )}
-
-      {status === 'valid' && (
-        <>
-          <div style={{ fontSize: 40, marginBottom: 16 }}>✅</div>
-          <h2 style={{ fontSize: 20, margin: '0 0 8px', color: '#7FFF00' }}>
-            Connexion réussie !
-          </h2>
-          <p style={{ color: '#9aa2b1', fontSize: 14 }}>
-            Bienvenue, <strong>{userEmail}</strong>. Redirection vers l’administration...
-          </p>
-        </>
-      )}
-
       {status === 'forbidden' && (
         <>
           <div style={{ fontSize: 40, marginBottom: 16 }}>⛔</div>
