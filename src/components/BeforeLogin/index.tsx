@@ -1,18 +1,37 @@
 'use client'
 
-import React, { useState } from 'react'
-import { signInWithGoogle } from '@/lib/auth-client'
+import React, { useEffect, useState } from 'react'
+import { authClient, signInWithGoogle } from '@/lib/auth-client'
 
 export const BeforeLogin: React.FC = () => {
   const [loading, setLoading] = useState(false)
+  const [statusMessage, setStatusMessage] = useState<string | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  // Pré-réveil automatique et transparent du backend Neon dès l'affichage de la page de login
+  useEffect(() => {
+    authClient.getSession().catch(() => {})
+  }, [])
 
   const handleGoogleClick = async () => {
     try {
+      setErrorMessage(null)
       setLoading(true)
+      setStatusMessage('Connexion à Google en cours...')
       await signInWithGoogle('/admin')
-    } catch (err) {
-      console.error('Erreur connexion Google:', err)
+    } catch (err: any) {
+      console.warn('Erreur connexion Google:', err)
       setLoading(false)
+      setStatusMessage(null)
+
+      const errStr = String(err?.message || err || '')
+      if (errStr.includes('502') || err?.status === 502) {
+        setErrorMessage(
+          'La base de données était en veille et vient d’être réveillée. Veuillez recliquer pour vous connecter.'
+        )
+      } else {
+        setErrorMessage('Impossible d’initialiser la connexion Google. Veuillez recliquer ou utiliser vos identifiants.')
+      }
     }
   }
 
@@ -29,6 +48,21 @@ export const BeforeLogin: React.FC = () => {
           Connexion
         </h1>
       </div>
+
+      {errorMessage && (
+        <div style={{
+          backgroundColor: 'rgba(234, 67, 53, 0.12)',
+          border: '1px solid rgba(234, 67, 53, 0.35)',
+          borderRadius: '8px',
+          padding: '10px 14px',
+          marginBottom: '14px',
+          fontSize: '13px',
+          color: '#ff7b72',
+          lineHeight: '1.4',
+        }}>
+          {errorMessage}
+        </div>
+      )}
 
       {/* Bouton Google SSO */}
       <button
@@ -49,7 +83,7 @@ export const BeforeLogin: React.FC = () => {
           fontSize: '14px',
           fontWeight: 600,
           cursor: loading ? 'not-allowed' : 'pointer',
-          opacity: loading ? 0.7 : 1,
+          opacity: loading ? 0.75 : 1,
           boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
           transition: 'all 0.15s ease',
         }}
@@ -73,7 +107,7 @@ export const BeforeLogin: React.FC = () => {
           />
         </svg>
         <span>
-          {loading ? 'Redirection Google...' : 'Continuer avec Google'}
+          {statusMessage || 'Continuer avec Google'}
         </span>
       </button>
 
