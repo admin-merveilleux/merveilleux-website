@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { RichText, type JSXConvertersFunction } from '@payloadcms/richtext-lexical/react'
+import { getMediaUrl } from '@/utilities/getMediaUrl'
 
 export const revalidate = 60
 
@@ -13,7 +14,7 @@ const customConverters: JSXConvertersFunction = ({ defaultConverters }) => ({
     const uploadDoc = (node as any).value
     if (!uploadDoc || typeof uploadDoc !== 'object') return null
 
-    const url = uploadDoc.url || ''
+    const url = getMediaUrl(uploadDoc.url)
     const alt = (node as any).fields?.alt || uploadDoc.alt || ''
     const isSvg = url.endsWith('.svg')
 
@@ -75,7 +76,7 @@ export default async function ArticleDetailPage({
   const article = docs[0]
 
   const mainImg = typeof article.mainImage === 'object' && article.mainImage ? article.mainImage : null
-  const coverUrl = mainImg?.url || null
+  const coverUrl = mainImg ? getMediaUrl(mainImg.url) : null
   const coverAlt = article.altImage || mainImg?.alt || article.title
 
   const category = Array.isArray(article.categories) && article.categories[0] && typeof article.categories[0] === 'object'

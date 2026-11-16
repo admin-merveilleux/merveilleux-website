@@ -10,9 +10,14 @@ const nextConfig = {
       },
     ],
   },
-  // Redirect old URLs for SEO preservation
+  // Redirect old URLs for SEO preservation and route local media to static assets
   async redirects() {
     return [
+      {
+        source: '/api/media/file/:path*',
+        destination: '/media/:path*',
+        permanent: false,
+      },
       {
         source: '/audit',
         destination: '/services/audit-ux',

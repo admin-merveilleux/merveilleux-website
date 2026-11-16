@@ -2,6 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { getMediaUrl } from '@/utilities/getMediaUrl'
 
 export const revalidate = 60 // Revalidate every minute
 
@@ -42,7 +43,7 @@ export default async function BlogListingPage({
       <div className="articles-grid">
         {articles.map((art) => {
           const mainImg = typeof art.mainImage === 'object' && art.mainImage ? art.mainImage : null
-          const imgUrl = mainImg?.url || '/media/optimized-saas-navigation.webp'
+          const imgUrl = getMediaUrl(mainImg?.url)
           const imgAlt = mainImg?.alt || art.title
           const category = Array.isArray(art.categories) && art.categories[0] && typeof art.categories[0] === 'object'
             ? art.categories[0].name
