@@ -151,7 +151,7 @@ function htmlToLexical(html: string, mediaMap: Record<string, number>) {
 
   editor.update(
     () => {
-      const nodes = $generateNodesFromDOM(editor, win.document)
+      const nodes = $generateNodesFromDOM(editor, win.document as any)
       const root = $getRoot()
       root.clear()
       root.append(...nodes)
@@ -343,7 +343,7 @@ async function run() {
     }
   }
   for (const c of rawContents) {
-    const matches = Array.from((c.body || '').matchAll(/<img[^>]+src=["']([^"']+)["'][^>]*>/gi))
+    const matches = Array.from((c.body || '').matchAll(/<img[^>]+src=["']([^"']+)["'][^>]*>/gi)) as RegExpMatchArray[]
     for (const m of matches) {
       const cleanSrc = m[1].split('?')[0]
       const rawName = path.basename(cleanSrc)
